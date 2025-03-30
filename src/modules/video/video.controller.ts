@@ -6,14 +6,19 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import VideoService from './video.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { ResponseSuccess } from '../../common/decorators/reponse-success.decorator';
 
 @Controller(`video`)
 export default class VideoController {
-  constructor(public videoService: VideoService) {}
-
+  constructor(protected videoService: VideoService) {}
+  @ResponseSuccess(`Lấy list video thành công`)
   @Get(`video-list`)
+  @ApiBearerAuth()
   async getListVideo(
     @Query()
     query: any,
@@ -23,10 +28,10 @@ export default class VideoController {
 
     @Query(`pageSize`)
     pageSize: string,
+    @Req()
+    req: Request,
   ) {
-    console.log({ query });
-    console.log({ page, pageSize });
-    const result = await this.videoService.getListVideo(query);
+    const result = await this.videoService.getListVideo(req, query);
     return result;
   }
   @Get(`video-detail/:id`)
